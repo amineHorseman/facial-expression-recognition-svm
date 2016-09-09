@@ -18,29 +18,29 @@ Let's try a much simpler (and faster) approach by extracting first face landmark
 
 2. Convert Fer2013 and extract landmarks
 
-'''
+```
 python convert_fer2013_to_npy.py
-'''
+```
 
 3. Train model:
 
-'''
+```
 python train.py --train=yes
-'''
+```
 
 4. Evaluate model
 
 If you have already a pretrained model
 
-'''
+```
 python train.py --evaluate=yes
-'''
+```
 
 5. Train and evaluate [instead of step 3 and 4]
 
-'''
+```
 python train.py --train=yes --evaluate=yes 
-'''
+```
 
 ##Results:
 
