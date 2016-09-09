@@ -1,0 +1,7 @@
+__pycache__/
+*$py.class
+*.pyc
+*.so
+.cache
+*.bin
+fer2013_landmarks/*
