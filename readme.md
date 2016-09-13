@@ -2,24 +2,40 @@
 
 Extract face landmarks using Dlib and train a multi-class SVM classifier to recognize facial expressions (emotions).
 
-##Motivation
-Fer2013 images are not aligned and it's difficult to classify facial expression on it.
-The best accuracy for Fer2013 (as I know) is 67%, the author trained a Convolutional Neural Network during several hours in a powerful GPU to obtain this results.
-Let's try a much simpler (and faster) approach by extracting first face landmarks and train them on a multi-class SVM:
 
-##Dependencies
-- Numpy
-- Argparse
-- Sklearn
+##Motivation
+Fer2013 images are not aligned and it's difficult to classify facial expression from it.
+
+The best accuracy for Fer2013 (as I know) is 67%, the author trained a Convolutional Neural Network during several hours in a powerful GPU to obtain this results.
+Let's try a much simpler (and faster) approach by extracting Face Landmarks and HOG features and feed them to a multi-class SVM classifier.
+
+
+##Results:
+
+/--------------------------------------------------------\
+|       Features        |  7 emotions   |   5 emotions   |
+|--------------------------------------------------------|
+| HoG features          |     29.0%     |      34.4%     |
+| Face landmarks        |     39.2%     |      46.9%     |
+| Face landmarks + HOG  |     48.2%     |      55.0%     |
+|--------------------------------------------------------|
+| Max training time     |    443 sec    |     288 sec    |
+\--------------------------------------------------------/
+
+While the training time is very short compared to CNN, we lost 19% in accuracy compared to the actual best result that uses CNN.
+
+Note: It's possible to obtain better results by changing parameters. One may implement a hyperparameters search to find the best parameters.
 
 ##How to use
 
-1. Extract "fer2013_landmarks.zip" file
+1. Extract "fer2013_landmarks+hog.zip" file
 
-2. Convert Fer2013 and extract landmarks
+2. Install dependencies
 
 ```
-python convert_fer2013_to_npy.py
+pip install Numpy
+pip install argparse
+pip install sklearn
 ```
 
 3. Train model:
@@ -41,14 +57,3 @@ python train.py --evaluate=yes
 ```
 python train.py --train=yes --evaluate=yes 
 ```
-
-##Results:
-
-- Training time: 80 seconds
-- Accuracy using 5 emotions = 46.9%
-- Accuracy using 7 emotions = 39.2%
-
-While the training time is very nice, we lost 28% in accuracy compared to the actual best result using CNN.
-
-I wonder which accuraccy we'll get if we feed the extracted landmarks to a CNN?
-
