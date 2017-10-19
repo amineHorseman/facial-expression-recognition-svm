@@ -1,26 +1,63 @@
 import numpy as np
 import pandas as pd
 import os
+import argparse
+import errno
 import scipy.misc
 import dlib
 import cv2
 
 from skimage.feature import hog
 
+# initialization
 image_height = 48
 image_width = 48
-ONE_HOT_ENCODING = True
+ONE_HOT_ENCODING = False
 SAVE_IMAGES = False
-GET_LANDMARKS = True
+GET_LANDMARKS = False
 GET_HOG_FEATURES = False
-FILTERED_LABELS = [0, 1, 2, 5]  # 0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral
+SELECTED_LABELS = []
 IMAGES_PER_LABEL = 1000000000
+OUTPUT_FOLDER_NAME = "fer2013_features"
 
+# parse arguments and initialize variables:
+parser = argparse.ArgumentParser()
+parser.add_argument("-j", "--jpg", default="no", help="save images as .jpg files")
+parser.add_argument("-l", "--landmarks", default="yes", help="extract Dlib Face landmarks")
+parser.add_argument("-ho", "--hog", default="yes", help="extract HOG features")
+parser.add_argument("-o", "--onehot", default="no", help="one hot encoding")
+parser.add_argument("-e", "--expressions", default="0,1,2,3,4,5,6", help="choose the faciale expression you want to use: 0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral")
+args = parser.parse_args()
+if args.jpg == "yes":
+    SAVE_IMAGES = True
+if args.landmarks == "yes":
+    GET_LANDMARKS = True
+if args.hog == "yes":
+    GET_HOG_FEATURES = True
+if args.onehot == "yes":
+    ONE_HOT_ENCODING = True
+if args.expressions != "":
+    expressions  = args.expressions.split(",")
+    for i in range(0,len(expressions)):
+        label = int(expressions[i])
+        if (label >=0 and label<=6 ):
+            SELECTED_LABELS.append(label)
+if SELECTED_LABELS == []:
+    SELECTED_LABELS = [0,1,2,3,4,5,6]
+
+# loading Dlib predictor and preparing arrays:
 print "preparing"
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 original_labels = [0, 1, 2, 3, 4, 5, 6]
-new_labels = list(set(original_labels) ^ set(FILTERED_LABELS))
+new_labels = list(set(original_labels) & set(SELECTED_LABELS))
 nb_images_per_label = list(np.zeros(len(new_labels), 'uint8'))
+try:
+    os.makedirs(OUTPUT_FOLDER_NAME)
+except OSError as e:
+    if e.errno == errno.EEXIST and os.path.isdir(OUTPUT_FOLDER_NAME):
+        pass
+    else:
+        raise
 
 def get_landmarks(image, rects):
     # this function have been copied from http://bit.ly/2cj7Fpq
@@ -46,7 +83,13 @@ for category in data['Usage'].unique():
     print "converting set: " + category + "..."
     # create folder
     if not os.path.exists(category):
-        os.makedirs(category)
+        try:
+            os.makedirs(OUTPUT_FOLDER_NAME + '/' + category)
+        except OSError as e:
+            if e.errno == errno.EEXIST and os.path.isdir(OUTPUT_FOLDER_NAME):
+               pass
+            else:
+                raise
     
     # get samples and labels of the actual category
     category_data = data[data['Usage'] == category]
@@ -61,7 +104,7 @@ for category in data['Usage'].unique():
     hog_images = []
     for i in xrange(len(samples)):
         try:
-            if labels[i] not in FILTERED_LABELS and nb_images_per_label[get_new_label(labels[i])] < IMAGES_PER_LABEL:
+            if labels[i] in SELECTED_LABELS and nb_images_per_label[get_new_label(labels[i])] < IMAGES_PER_LABEL:
                 image = np.fromstring(samples[i], dtype=int, sep=" ").reshape((image_height, image_width))
                 images.append(image)
                 if SAVE_IMAGES:
@@ -82,13 +125,13 @@ for category in data['Usage'].unique():
         except Exception as e:
             print "error in image: " + str(i) + " - " + str(e)
 
-    np.save(category + '/images.npy', images)
+    np.save(OUTPUT_FOLDER_NAME + '/' + category + '/images.npy', images)
     if ONE_HOT_ENCODING:
-        np.save(category + '/labels.npy', labels_list)
+        np.save(OUTPUT_FOLDER_NAME + '/' + category + '/labels.npy', labels_list)
     else:
-        np.save(category + '/labels_categorical.npy', labels_list)
+        np.save(OUTPUT_FOLDER_NAME + '/' + category + '/labels.npy', labels_list)
     if GET_LANDMARKS:
-        np.save(category + '/landmarks.npy', landmarks)
+        np.save(OUTPUT_FOLDER_NAME + '/' + category + '/landmarks.npy', landmarks)
     if GET_HOG_FEATURES:
-        np.save(category + '/hog_features.npy', hog_features)
-        np.save(category + '/hog_images.npy', hog_images)
+        np.save(OUTPUT_FOLDER_NAME + '/' + category + '/hog_features.npy', hog_features)
+        np.save(OUTPUT_FOLDER_NAME + '/' + category + '/hog_images.npy', hog_images)

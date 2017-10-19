@@ -1,59 +1,96 @@
-#Facial expression recognition using SVM
+# Facial expression recognition using SVM
 
 Extract face landmarks using Dlib and train a multi-class SVM classifier to recognize facial expressions (emotions).
 
 
-##Motivation
-Fer2013 images are not aligned and it's difficult to classify facial expression from it.
+## Motivation:
 
-The best accuracy for Fer2013 (as I know) is 67%, the author trained a Convolutional Neural Network during several hours in a powerful GPU to obtain this results.
-Let's try a much simpler (and faster) approach by extracting Face Landmarks and HOG features and feed them to a multi-class SVM classifier.
+The task is to categorize people images based on the emotion shown by the facial expression. 
+To train our model, we want to use Fer2013 datset that contains 30,000 images of expressions grouped in seven categories: Angry, Disgust, Fear, Happy, Sad, Surprise and Neutral.
+The problem is that Fer2013 images are not aligned and it's difficult to classify facial expressions from it.
+The state-of-art accuracy achieved in this dataset is 69.4% (refer to: *Y. Tang. "Deep learning using linear support vector machines". arXiv preprint arXiv:1306.0239, 2013*), a Convolutional Neural Network was used during several hours on GPU to obtain these results.
+Lets try a much simpler (and faster) approach by extracting Face Landmarks + HOG features and feed them to a multi-class SVM classifier. The goal is to get a quick baseline for educational purpose, if you want to achieve better results please refer to Tang's paper. 
 
 
-##Results:
+## Accuracy Results:
 
-/--------------------------------------------------------\
 |       Features        |  7 emotions   |   5 emotions   |
-|--------------------------------------------------------|
+|-----------------------|---------------|----------------|
 | HoG features          |     29.0%     |      34.4%     |
 | Face landmarks        |     39.2%     |      46.9%     |
 | Face landmarks + HOG  |     48.2%     |      55.0%     |
-|--------------------------------------------------------|
-| Max training time     |    443 sec    |     288 sec    |
-\--------------------------------------------------------/
 
-While the training time is very short compared to CNN, we lost 19% in accuracy compared to the actual best result that uses CNN.
+As predicted, the SVM is very fast (less than 400 seconds on CPU only), but the Deep Learning approaches achieve better results.
 
-Note: It's possible to obtain better results by changing parameters. One may implement a hyperparameters search to find the best parameters.
+## How to use
 
-##How to use
+1. Download Fer2013 dataset and the Face Landmarks model
 
-1. Extract "fer2013_landmarks+hog.zip" file
+    - [Kaggle Fer2013 challenge](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data)
+    - [Dlib Shape Predictor model](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2)
 
-2. Install dependencies
+2. Unzip the downloaded files
 
-```
-pip install Numpy
-pip install argparse
-pip install sklearn
-```
+    And put the files `fer2013.csv` and `shape_predictor_68_face_landmarks.dat` in the root folder of this package.
 
-3. Train model:
+3. Install dependencies
 
-```
-python train.py --train=yes
-```
+    ```
+    pip install Numpy
+    pip install argparse
+    pip install sklearn
+    pip install scikit-image
+    pip install pandas
+    ```
 
-4. Evaluate model
+    Make sure Dlib and OpenCV 3 are also instlled.
 
-If you have already a pretrained model
+4. Convert the dataset to extract Face Landmarks and HOG Features
 
-```
-python train.py --evaluate=yes
-```
+    ```
+    python convert_fer2013_to_images_and_landmarks.py
+    ```
 
-5. Train and evaluate [instead of step 3 and 4]
+    You can also use these optional arguments according to your needs:
+    `-j`, `--jpg` (yes|no): **save images as .jpg files (default=no)**
+    `-l`, `--landmarks` *(yes|no)*: **extract Dlib Face landmarks (default=yes)**
+    `-ho`, `--hog` (yes|no): **extract HOG features (default=yes)**
+    `-o`, `--onehot` (yes|no): **one hot encoding (default=no)**
+    `-e`, `--expressions` (list of numbers): **choose the faciale expression you want to use: *0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral* (default=0,1,2,3,4,5,6)**
 
-```
-python train.py --train=yes --evaluate=yes 
-```
+    Example
+    ```
+    python convert_fer2013_to_images_and_landmarks.py --landmarks=yes --hog=no --jpg=no --onehot=no --expressions=1,3,4
+    ```
+
+5. Train the model
+
+    ```
+    python train.py --train=yes
+    ```
+
+6. Evaluate the model
+
+    If you have already a pretrained model
+
+    ```
+    python train.py --evaluate=yes
+    ```
+
+7. Train and evaluate [instead of step 5 and 6]
+
+    ```
+    python train.py --train=yes --evaluate=yes 
+    ```
+
+8. Customize the training parameters:
+
+    Feel free to change the values of the parameters in the `parameters.py` file according to your needs.
+
+## TODO
+Some ideas for interessted contributors:
+- Add other implementations of SVM algorithms
+- Add more datasets
+- Hyperparameters optimization
+- Predict expression from a .jpg|.png file
+

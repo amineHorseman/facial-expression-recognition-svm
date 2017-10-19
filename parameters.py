@@ -1,11 +1,10 @@
-
 import os
 
 class Dataset:
     name = 'Fer2013'
-    train_folder = 'fer2013_landmarks+hog/train_set'
-    validation_folder = 'fer2013_landmarks+hog/validation_set'
-    test_folder = 'fer2013_landmarks+hog/test_set'
+    train_folder = 'fer2013_features/Training'
+    validation_folder = 'fer2013_features/PublicTest'
+    test_folder = 'fer2013_features/PrivateTest'
     trunc_trainset_to = -1
     trunc_validationset_to = -1
     trunc_testset_to = -1
@@ -15,7 +14,7 @@ class Hyperparams:
     epochs = 10000
     kernel = 'rbf'  # 'rbf', 'linear', 'poly' or 'sigmoid'
     decision_function = 'ovr'  # 'ovo' for OneVsOne and 'ovr' for OneVsRest'
-    features = "landmarks_and_hog" # "landmarks" or "hog" or "landmarks+hog"
+    features = "landmarks_and_hog" # "landmarks" or "hog" or "landmarks_and_hog"
  
 class Training:
     save_model = True
