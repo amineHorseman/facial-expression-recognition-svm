@@ -14,13 +14,18 @@ Lets try a much simpler (and faster) approach by extracting Face Landmarks + HOG
 
 ## Accuracy Results:
 
-|       Features        |  7 emotions   |   5 emotions   |
-|-----------------------|---------------|----------------|
-| HoG features          |     29.0%     |      34.4%     |
-| Face landmarks        |     39.2%     |      46.9%     |
-| Face landmarks + HOG  |     48.2%     |      55.0%     |
+|       Features                          |  7 emotions   |   5 emotions   |
+|-----------------------------------------|---------------|----------------|
+| HoG features                            |     29.0%     |      34.4%     |
+| Face landmarks                          |     39.2%     |      46.9%     |
+| Face landmarks + HOG                    |     48.2%     |      55.0%     |
+| Face landmarks + HOG on slinding window |     50.5%     |      59.4%     |
 
-As predicted, the SVM is very fast (less than 400 seconds on CPU only), but the Deep Learning approaches achieve better results.
+As expected, the Deep Learning approaches achieve better results (compare results with [Facial Expressions Recognition using CNN](https://github.com/amineHorseman/facial-expression-recognition-using-cnn))
+
+The SVM training time was about ~400 seconds on an i7 2.8Ghz CPU, for the last experiment (sliding window) the training time reached 2060 seconds.
+
+For the experiments with 5 emotions, the following expressions was used: Angry, Happy, Sad, Surprise, Neutral.
 
 ## How to use
 
