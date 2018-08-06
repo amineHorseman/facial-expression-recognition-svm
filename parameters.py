@@ -12,9 +12,11 @@ class Dataset:
 class Hyperparams:
     random_state = 0
     epochs = 10000
+    epochs_during_hyperopt = 500
     kernel = 'rbf'  # 'rbf', 'linear', 'poly' or 'sigmoid'
     decision_function = 'ovr'  # 'ovo' for OneVsOne and 'ovr' for OneVsRest'
     features = "landmarks_and_hog" # "landmarks" or "hog" or "landmarks_and_hog"
+    gamma = 'auto' # use a float number or 'auto' 
  
 class Training:
     save_model = True

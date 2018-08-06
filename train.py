@@ -9,7 +9,7 @@ from data_loader import load_data
 from parameters import DATASET, TRAINING, HYPERPARAMS
 
 def train(epochs=HYPERPARAMS.epochs, random_state=HYPERPARAMS.random_state, 
-          kernel=HYPERPARAMS.kernel, decision_function=HYPERPARAMS.decision_function, train_model=True):
+          kernel=HYPERPARAMS.kernel, decision_function=HYPERPARAMS.decision_function, gamma=HYPERPARAMS.gamma, train_model=True):
 
         print "loading dataset " + DATASET.name + "..."
         if train_model:
@@ -20,13 +20,14 @@ def train(epochs=HYPERPARAMS.epochs, random_state=HYPERPARAMS.random_state,
         if train_model:
             # Training phase
             print "building model..."
-            model = SVC(random_state=random_state, max_iter=epochs, kernel=kernel, decision_function_shape=decision_function)
+            model = SVC(random_state=random_state, max_iter=epochs, kernel=kernel, decision_function_shape=decision_function, gamma=gamma)
 
             print "start training..."
             print "--"
             print "kernel: {}".format(kernel)
             print "decision function: {} ".format(decision_function)
             print "max epochs: {} ".format(epochs)
+            print "gamma: {} ".format(gamma)
             print "--"
             print "Training samples: {}".format(len(data['Y']))
             print "Validation samples: {}".format(len(validation['Y']))
