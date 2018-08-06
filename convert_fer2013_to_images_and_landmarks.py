@@ -69,9 +69,9 @@ except OSError as e:
 def get_landmarks(image, rects):
     # this function have been copied from http://bit.ly/2cj7Fpq
     if len(rects) > 1:
-        raise TooManyFaces
+        raise BaseException("TooManyFaces")
     if len(rects) == 0:
-        raise NoFaces
+        raise BaseException("NoFaces")
     return np.matrix([[p.x, p.y] for p in predictor(image, rects[0]).parts()])
 
 def get_new_label(label, one_hot_encoding=False):
