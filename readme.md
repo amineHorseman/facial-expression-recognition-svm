@@ -27,6 +27,7 @@ The SVM training time was about ~400 seconds on an i7 2.8Ghz CPU, for the last e
 
 For the experiments with 5 emotions, the following expressions was used: Angry, Happy, Sad, Surprise, Neutral.
 
+The code was tested for python 2.7 and 3.6.
 
 ## How to use
 
@@ -42,15 +43,14 @@ For the experiments with 5 emotions, the following expressions was used: Angry, 
 3. Install dependencies
 
     ```
-    pip install Numpy
+    pip install numpy
     pip install argparse
     pip install sklearn
     pip install scikit-image
     pip install pandas
     pip install hyperopt
+    pip install dlib
     ```
-
-    Make sure Dlib and OpenCV 3 are also installed.
 
 4. Convert the dataset to extract Face Landmarks and HOG Features
 
@@ -104,9 +104,8 @@ For the experiments with 5 emotions, the following expressions was used: Angry, 
     After finding the best hyperparameters, you should change the corresponding values in `parameters.py` and retrain the model.
     N.B: the accuracies displayed during hyperoptimization are for validation_set only (not test_set)
     
-## TODO
+## Contributing
+
 Some ideas for interessted contributors:
-- Python 3 compatibility
 - Add other features extraction techniques?
 - Predict expression from a .jpg|.png file?
-- Add more datasets?
